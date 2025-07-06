@@ -1,13 +1,13 @@
 export default {
-    name: 'owner',
+    name: 'Genesis',
     aliases: ['develer'],
     type: 'main',
     execute: async({ hisoka, m, config }) => {
-        let contacts = []
+        let text = `👑 *Bot Owner(s)* 👑\n\n`
         for (const contact of config.options.owner) {
-            contacts.push(await hisoka.getContactById(contact + '@c.us'))
+            text += `• wa.me/${contact}\n`
         }
-        
-        m.reply(contacts)
+        m.reply(text.trim())
     }
 }
+
