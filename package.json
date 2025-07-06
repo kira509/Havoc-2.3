@@ -1,33 +1,29 @@
 {
-  "name": "hisoka-morou",
-  "version": "3.0.1",
-  "description": "WhatsApp Bot Using Lib whatsapp-web.js",
+  "name": "Havoc",
+  "version": "1.0.0",
+  "description": "Genesis WhatsApp Bot powered by whatsapp-web.js",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "start": "node index.js --max-old-space-size=8192"
   },
   "keywords": [
-    "wawebjs",
-    "base-wabot",
-    "playwright",
-    "hisoka",
-    "whatsapp-web.js"
+    "whatsapp-web.js",
+    "genesisbot",
+    "whatsapp-bot",
+    "chatbot",
+    "nodejs"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/DikaArdnt/Hisoka-Morou"
+    "url": "https://github.com/kira509/Havoc-2.3"
   },
-  "bugs": {
-    "url": "https://github.com/DikaArdnt/Hisoka-Morou/issues"
-  },
-  "homepage": "https://github.com/DikaArdnt/Hisoka-Morou",
   "author": {
-    "name": "Dika Ardnt.",
-    "email": "dika.ardianta7@yahoo.com",
-    "url": "https://github.com/DikaArdnt"
+    "name": "Your Name or Brand",
+    "email": "naracavanci@gmail.com",
+    "url": "https://github.com/kira509"
   },
-  "license": "GPL-3.0-or-later",
+  "license": "MIT",
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
     "child_process": "^1.0.2",
@@ -40,4 +36,6 @@
     "util": "^0.12.5",
     "whatsapp-web.js": "github:amiruldev20/mywajs#v2"
   }
+}
+
 }
