@@ -55,7 +55,7 @@ export default {
    // Exif metadata for sticker branding
    Exif: {
       packId: "https://genesisbot.com",
-      packName: "✨ Created with GenesisBot",
+      packName: "✨ Created with Havoc",
       packPublish: "Genesis Dev Team",
       packEmail: "support@genesisbot.com",
       packWebsite: "https://genesisbot.com",
