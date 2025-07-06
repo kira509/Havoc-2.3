@@ -1,8 +1,8 @@
 <h1 align="center">
 
-<img width="500" src="https://dafunda.com/wp-content/uploads/2021/01/Karakter-Hunter-x-Hunter-Yang-Kuat-Menurut-Hisoka.jpg">
+<img width="500" src="[https://dafunda.com/wp-content/uploads/2021/01/Karakter-Hunter-x-Hunter-Yang-Kuat-Menurut-Hisoka.jpg](https://www.google.com/imgres?q=pictures&imgurl=https%3A%2F%2Fi.natgeofe.com%2Fn%2F29712b3c-fce4-4bbc-99fe-de3a01033e38%2F01_pod-best-animals.jpg&imgrefurl=https%3A%2F%2Fwww.nationalgeographic.com%2Fphotography%2Farticle%2Fanimals&docid=w-lEusGdwjKF_M&tbnid=3k07VB0iwtc77M&vet=12ahUKEwjVo6Di6aiOAxWiQ_EDHcbKH1wQM3oECHwQAA..i&w=3072&h=2049&hcb=2&ved=2ahUKEwjVo6Di6aiOAxWiQ_EDHcbKH1wQM3oECHwQAA)">
 
-<br> Hisoka Bot
+<br> HAVOC
  
  > This script is run using the whatsapp-web.js library and uses puppeteer
  
@@ -13,7 +13,7 @@
 ## [![JavaScript](https://img.shields.io/badge/JavaScript-d6cc0f?style=for-the-badge&logo=javascript&logoColor=white)](https://javascript.com) [![NodeJS](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
  
 </h1>
-<h4 align="center">Hisoka Morou</h4>
+<h4 align="center">The Gnesis</h4>
 
 
 <!-- Installation -->
