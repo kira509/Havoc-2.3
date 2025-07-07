@@ -4,10 +4,10 @@
   "description": "Genesis WhatsApp Bot powered by whatsapp-web.js",
   "main": "index.js",
   "type": "module",
-  "scripts": {
-    "start": "node index.js --max-old-space-size=8192"
-    "postinstall": "playwright install --with-deps"
-  },
+ "scripts": {
+  "start": "node index.js --max-old-space-size=8192",
+  "postinstall": "playwright install --with-deps"
+},
   "keywords": [
     "whatsapp-web.js",
     "genesisbot",
