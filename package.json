@@ -6,7 +6,7 @@
   "type": "module",
  "scripts": {
   "start": "node index.js --max-old-space-size=8192",
-  "postinstall": "playwright install --with-deps"
+  "postinstall": "playwright install "
 },
   "keywords": [
     "whatsapp-web.js",
