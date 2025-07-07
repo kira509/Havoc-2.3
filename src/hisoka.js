@@ -79,6 +79,11 @@ async function start() {
         console.info("Loading QR Code for WhatsApp, Please Scan...")
         qrcode.generate(qr, { small: true })
     })
+    
+    hisoka.on("pairing-code", (code) => {
+    console.log(`🔐 Pairing Code: ${code}`)
+})
+
 
     hisoka.on("loading_screen", (percent, message) => {
         console.log(chalk.bgBlack(chalk.green(message)) + " :" + chalk.bgBlack(chalk.yellow(percent)))
