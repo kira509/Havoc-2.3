@@ -17,12 +17,13 @@ export default {
    limit,
 
    // External API settings (plug in your API keys securely)
-   APIs: {
-      xzn: {
-         URI: 'https://xzn.wtf',
-         Key: "NPxQfe"
-      }
-   },
+  APIs: {
+  neoxr: {
+    URI: 'https://neoxr-api.vercel.app',
+    Key: process.env.BOT_API_KEY
+  }
+}
+,
 
    // GenesisBot system messages
    msg: {
