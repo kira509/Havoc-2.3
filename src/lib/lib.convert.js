@@ -1,5 +1,6 @@
 import axios from "axios"
-import cheerio from "cheerio"
+import * as cheerio from "cheerio"
+
 import BodyForm from "form-data"
 import fs from "fs"
 import path from "path"
