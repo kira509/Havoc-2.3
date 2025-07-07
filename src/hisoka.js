@@ -1,5 +1,5 @@
 import config from "../config.js"
-import { LocalAuth } from 'whatsapp-web.js'
+import { Client, LocalAuth } from 'whatsapp-web.js'
 import chokidar from "chokidar"
 import { chromium } from 'playwright-chromium'
 import { platform } from 'os'
