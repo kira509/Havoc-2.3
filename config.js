@@ -46,7 +46,7 @@ export default {
 
    // GenesisBot control options
    options: {
-      public: true, // true = public bot, false = private (owner-only)
+      public: false, // true = public bot, false = private (owner-only)
       URI: "database.json", // Replace with MongoDB URI if needed
       owner: ["254738701209"], // Add your WhatsApp numbers
       pathCommand: 'commands' // Folder where your commands are stored
