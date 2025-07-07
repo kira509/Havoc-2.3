@@ -128,6 +128,6 @@ choki
 })
 
   hisoka.initialize()
-}
+
 
 start()
