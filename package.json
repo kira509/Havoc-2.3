@@ -5,8 +5,7 @@
   "main": "index.js",
   "type": "module",
  "scripts": {
-  "start": "node index.js --max-old-space-size=8192",
-  "postinstall": "playwright install chromium"
+  "start": "node index.js --max-old-space-size=8192"
 },
   "keywords": [
     "whatsapp-web.js",
