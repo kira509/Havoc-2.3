@@ -1,9 +1,10 @@
 import config from "../config.js"
-import { LocalAuth } from 'whatsapp-web.js'
-import puppeteer from "puppeteer"
+import { LocalAuth } from "whatsapp-web.js"
 import chokidar from "chokidar"
-import path from 'path'
-import { platform } from 'os'
+import puppeteer from "puppeteer"
+import path from "path"
+import { fileURLToPath } from "url"
+import { platform } from "os"
 
 import API from "./lib/lib.api.js"
 import Function from "./lib/lib.function.js"
@@ -17,74 +18,88 @@ global.api = API
 global.commands = new (await import("./lib/lib.collection.js")).default
 
 async function start() {
-  process.on("uncaughtException", console.error)
-  process.on("unhandledRejection", console.error)
-  readCommands()
+   process.on("uncaughtException", console.error)
+   process.on("unhandledRejection", console.error)
+   readCommands()
 
-  const content = await database.read()
-  global.db = content && Object.keys(content).length === 0
-    ? { users: {}, groups: {}, ...content }
-    : content || {}
-  await database.write(global.db)
+   const content = await database.read()
+   global.db = content && Object.keys(content).length === 0
+      ? { users: {}, groups: {}, ...content }
+      : content || {}
+   await database.write(global.db)
 
-  const hisoka = new Client({
-    authStrategy: new LocalAuth({
-      dataPath: `./${config.session.Path}`,
-      clientId: `${config.session.Name}`
-    }),
-    puppeteer: {
+   const browser = await puppeteer.launch({
       headless: true,
       args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-gpu",
-        "--disable-dev-shm-usage",
-        "--disable-accelerated-2d-canvas",
-        "--disable-web-security",
-        "--disable-features=site-per-process"
+         "--no-sandbox",
+         "--disable-setuid-sandbox",
+         "--disable-dev-shm-usage",
+         "--disable-accelerated-2d-canvas",
+         "--disable-gpu",
+         "--disable-cache",
+         "--disable-application-cache",
+         "--no-first-run",
+         "--no-zygote",
+         "--disable-infobars"
       ]
-    },
-    takeoverTimeoutMs: 0,
-    autoClearSession: true,
-    qrMaxRetries: 0 // ⟸ disables QR completely
-  })
+   })
 
-  // ✅ Request Pairing Code
-  hisoka.once("require_pairing_code", async () => {
-    const code = await hisoka.requestPairingCode(config.pairingNumber) // Example: '254712345678'
-    console.log(`🔐 Pairing Code: ${code}`)
-  })
+   const hisoka = new Client({
+      authStrategy: new LocalAuth({
+         dataPath: `./${config.session.Path}`,
+         clientId: `${config.session.Name}`
+      }),
+      puppeteer: browser,
+      webVersionCache: {
+         type: 'remote',
+         remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html'
+      },
+      takeoverOnConflict: true,
+      takeoverTimeoutMs: 'Infinity',
+      autoClearSession: true
+   })
 
-  hisoka.on("ready", () => {
-    console.info("✅ GenesisBot is online and connected to WhatsApp!")
-  })
+   // 📲 Pair Code Login Handler
+   hisoka.once("require_pairing_code", async () => {
+      const code = await hisoka.requestPairingCode(config.options.owner[0])
+      console.log(`🔐 Pairing Code: ${code}`)
+   })
 
-  hisoka.on("auth_failure", console.error)
-  hisoka.on("disconnected", () => start())
+   hisoka.on("ready", () => {
+      console.log("✅ GenesisBot connected!")
+   })
 
-  hisoka.on("message_create", async (msg) => {
-    const m = await serialize(hisoka, msg)
-    await Message(hisoka, m)
-  })
+   hisoka.on("auth_failure", console.error)
 
-  // Write DB every 30 seconds
-  setInterval(async () => {
-    if (global.db) await database.write(global.db)
-  }, 30000)
+   hisoka.on("disconnected", () => {
+      console.log("⚠️ Disconnected. Restarting GenesisBot...")
+      start()
+   })
 
-  hisoka.initialize()
+   hisoka.on("message_create", async (message) => {
+      const m = await serialize(hisoka, message)
+      await Message(hisoka, m)
+   })
+
+   // Auto-save DB
+   setInterval(async () => {
+      if (global.db) await database.write(global.db)
+   }, 30000)
+
+   hisoka.initialize()
 }
 
-// Auto command hot-reload
-let choki = chokidar.watch(Func.__filename(path.join(process.cwd(), 'src', 'commands')), { ignored: /^\./ })
-choki
-  .on('change', async filePath => {
-    const cmd = await import(Func.__filename(filePath) + "?v=" + Date.now())
-    global.commands.set(cmd?.default?.name, cmd)
-  })
-  .on('add', async filePath => {
-    const cmd = await import(Func.__filename(filePath) + "?v=" + Date.now())
-    global.commands.set(cmd?.default?.name, cmd)
-  })
-
 start()
+
+// 🔁 Hot reload command files
+let commandsPath = path.join(process.cwd(), 'src', 'commands')
+let choki = chokidar.watch(Func.__filename(commandsPath), { ignored: /^\./ })
+choki
+   .on('change', async (Path) => {
+      const command = await import(Func.__filename(Path) + "?v=" + Date.now())
+      global.commands.set(command?.default?.name, command)
+   })
+   .on('add', async (Path) => {
+      const command = await import(Func.__filename(Path) + "?v=" + Date.now())
+      global.commands.set(command?.default?.name, command)
+   })
