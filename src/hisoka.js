@@ -1,9 +1,9 @@
 import config from "../config.js"
-import { LocalAuth } from "whatsapp-web.js"
-import chokidar from "chokidar"
+import { LocalAuth } from 'whatsapp-web.js'
 import puppeteer from "puppeteer"
-import { platform } from "os"
-import path from "path"
+import chokidar from "chokidar"
+import path from 'path'
+import { platform } from 'os'
 
 import API from "./lib/lib.api.js"
 import Function from "./lib/lib.function.js"
@@ -35,36 +35,39 @@ async function start() {
     puppeteer: {
       headless: true,
       args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-accelerated-2d-canvas',
-        '--no-zygote',
-        '--disable-gpu',
-        '--window-size=1920,1080'
-      ],
-      executablePath: await puppeteer.executablePath()
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-gpu",
+        "--disable-dev-shm-usage",
+        "--disable-accelerated-2d-canvas",
+        "--disable-web-security",
+        "--disable-features=site-per-process"
+      ]
     },
-    qrMaxRetries: 0, // Disable QR retries
-    takeoverTimeoutMs: 'Infinity',
-    autoClearSession: true
+    takeoverTimeoutMs: 0,
+    autoClearSession: true,
+    qrMaxRetries: 0 // ⟸ disables QR completely
   })
 
-  // Pairing Code Mode
+  // ✅ Request Pairing Code
   hisoka.once("require_pairing_code", async () => {
-    const code = await hisoka.requestPairingCode(config.pairCodeNumber || "254700000000") // replace with your number
+    const code = await hisoka.requestPairingCode(config.pairingNumber) // Example: '254712345678'
     console.log(`🔐 Pairing Code: ${code}`)
   })
 
-  hisoka.on("ready", () => console.info("✅ GenesisBot connected!"))
+  hisoka.on("ready", () => {
+    console.info("✅ GenesisBot is online and connected to WhatsApp!")
+  })
+
   hisoka.on("auth_failure", console.error)
   hisoka.on("disconnected", () => start())
 
-  hisoka.on("message_create", async (message) => {
-    const m = await serialize(hisoka, message)
+  hisoka.on("message_create", async (msg) => {
+    const m = await serialize(hisoka, msg)
     await Message(hisoka, m)
   })
 
+  // Write DB every 30 seconds
   setInterval(async () => {
     if (global.db) await database.write(global.db)
   }, 30000)
@@ -72,16 +75,16 @@ async function start() {
   hisoka.initialize()
 }
 
-start()
-
-// Watch command folder for changes
+// Auto command hot-reload
 let choki = chokidar.watch(Func.__filename(path.join(process.cwd(), 'src', 'commands')), { ignored: /^\./ })
 choki
-  .on('change', async (Path) => {
-    const command = await import(Func.__filename(Path) + "?v=" + Date.now())
-    global.commands.set(command?.default?.name, command)
+  .on('change', async filePath => {
+    const cmd = await import(Func.__filename(filePath) + "?v=" + Date.now())
+    global.commands.set(cmd?.default?.name, cmd)
   })
-  .on('add', async function (Path) {
-    const command = await import(Func.__filename(Path) + "?v=" + Date.now())
-    global.commands.set(command?.default?.name, command)
+  .on('add', async filePath => {
+    const cmd = await import(Func.__filename(filePath) + "?v=" + Date.now())
+    global.commands.set(cmd?.default?.name, cmd)
   })
+
+start()
