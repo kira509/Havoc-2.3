@@ -1,7 +1,7 @@
 {
   "name": "Havoc",
   "version": "1.0.0",
-  "description": "Genesis WhatsApp Bot powered by whatsapp-web.js",
+  "description": "Genesis WhatsApp Bot powered by whatsapp-web.js and puppeteer",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -12,6 +12,7 @@
     "genesisbot",
     "whatsapp-bot",
     "chatbot",
+    "puppeteer",
     "nodejs"
   ],
   "repository": {
@@ -25,6 +26,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "axios": "^1.6.8",
     "puppeteer": "^21.3.8",
     "whatsapp-web.js": "^1.23.0",
     "cheerio": "^1.0.0-rc.12",
@@ -38,3 +40,4 @@
     "util": "^0.12.5"
   }
 }
+
