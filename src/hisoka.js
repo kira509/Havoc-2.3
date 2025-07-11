@@ -13,7 +13,6 @@ import { serialize } from "./lib/whatsapp.serialize.js"
 import { Message, readCommands } from "./event/event.message.js"
 import { database as databes } from "./lib/lib.database.js"
 
-
 const database = new databes()
 global.Func = Function
 global.api = API
