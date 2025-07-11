@@ -11,9 +11,9 @@ import API from "./lib/lib.api.js"
 import Function from "./lib/lib.function.js"
 import { serialize } from "./lib/whatsapp.serialize.js"
 import { Message, readCommands } from "./event/event.message.js"
-import Database from "./lib/lib.database.js"
-const database = new Database()
+import { Database } from "./lib/lib.database.js" // ✅ Fixed
 
+const database = new Database()
 global.Func = Function
 global.api = API
 global.commands = new (await import("./lib/lib.collection.js")).default
@@ -29,6 +29,7 @@ async function start() {
     : content || {}
   await database.write(global.db)
 
+  // ✅ Launch Puppeteer Browser
   const browser = await puppeteer.launch({
     headless: true,
     args: [
@@ -42,6 +43,7 @@ async function start() {
     ]
   })
 
+  // ✅ Create WhatsApp client
   const hisoka = new Client({
     authStrategy: new LocalAuth({
       dataPath: `./${config.session.Path}`,
@@ -53,22 +55,29 @@ async function start() {
     qrMaxRetries: 0
   })
 
-  // ✅ Use Pairing Code Instead of QR
+  // ✅ Pairing code login
   hisoka.once("require_pairing_code", async () => {
-    const code = await hisoka.requestPairingCode(config.options.owner[0])
-    console.log(`🔐 Pairing Code: ${code}`)
+    try {
+      const code = await hisoka.requestPairingCode(config.options.owner[0])
+      console.log(`🔐 Pairing Code: ${code}`)
+    } catch (err) {
+      console.error("❌ Pairing Code Error:", err)
+    }
   })
 
   hisoka.on("ready", () => console.info("✅ GenesisBot connected!"))
   hisoka.on("auth_failure", console.error)
-  hisoka.on("disconnected", () => start())
+  hisoka.on("disconnected", () => {
+    console.log("📴 Disconnected. Restarting...")
+    start()
+  })
 
   hisoka.on("message_create", async (msg) => {
     const m = await serialize(hisoka, msg)
     await Message(hisoka, m)
   })
 
-  // autosave DB
+  // ⏳ Auto-save database
   setInterval(async () => {
     if (global.db) await database.write(global.db)
   }, 30000)
@@ -78,7 +87,10 @@ async function start() {
 
 start()
 
-let choki = chokidar.watch(Func.__filename(path.join(process.cwd(), 'src', 'commands')), { ignored: /^\./ })
+// 🔄 Hot reload for commands
+let choki = chokidar.watch(Func.__filename(path.join(process.cwd(), 'src', 'commands')), {
+  ignored: /^\./
+})
 choki
   .on('change', async Path => {
     const command = await import(Func.__filename(Path) + "?v=" + Date.now())
