@@ -1,7 +1,17 @@
-# Base image
-FROM node:20-slim
+# Use official Node.js image
+FROM node:20
 
-# Puppeteer dependencies
+# Set working directory
+WORKDIR /app
+
+# Copy package files and install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy source files
+COPY . .
+
+# Puppeteer dependencies for headless Chromium
 RUN apt-get update && apt-get install -y \
     wget \
     ca-certificates \
@@ -20,22 +30,10 @@ RUN apt-get update && apt-get install -y \
     libxdamage1 \
     libxrandr2 \
     xdg-utils \
-    --no-install-recommends && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
-WORKDIR /app
-
-# Copy package.json & install deps
-COPY package*.json ./
-RUN npm install
-
-# Copy the rest of the code
-COPY . .
-
-# Expose a dummy port to satisfy Render
+# Expose port (for web-based bots, optional here)
 EXPOSE 3000
 
 # Start the bot
-CMD ["node", "index.js"]
+CMD ["npm", "start"]
