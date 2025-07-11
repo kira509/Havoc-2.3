@@ -1,58 +1,73 @@
 import config from "../../config.js"
-
-import { fileURLToPath } from "url"
+import mongoose from "mongoose"
 import fs from "fs"
+import path from "path"
+mongoose.set("strictQuery", false)
 
-const loadDatabase = (m) => {
-    const isNumber = x => typeof x === "number" && !isNaN(x)
-    const isBoolean = x => typeof x === "boolean" && Boolean(x)
-    let user = global.db.users[m.sender]
-    if (typeof user !== "object") global.db.users[m.sender] = {}
-    if (user) {
-        if (!isNumber(user.limit)) user.limit = config.limit.free
-        if (!isBoolean(user.premium)) user.premium = m.isOwner ? true : false
-        if (!isBoolean(user.VIP)) user.VIP = m.isOwner ? true : false
-        if (!isBoolean(user.registered)) user.registered = false
-        if (!("lastChat" in user)) user.lastChat = new Date * 1
-        if (!("name" in user)) user.name = m.pushName
-        if (!isNumber(user.exp)) user.exp = 0
-        if (!isBoolean(user.banned)) user.banned = false
-        if (!isBoolean(user.simi)) user.simi = false
-    } else {
-        global.db.users[m.sender] = {
-            limit: config.limit.free,
-            lastChat: new Date * 1,
-            premium: m.isOwner ? true : false,
-            VIP: m.isOwner ? true : false,
-            registered: false,
-            name: m.pushName,
-            exp: 0,
-            banned: false,
-            simi: false
+class MongoDB {
+    constructor(url) {
+        this.url = url || config.options.URI
+        this.options = {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
         }
+        this.model = { database: {} }
+        this.data = {}
     }
 
-    if (m.isGroup) {
-        let group = global.db.groups[m.from]
-        if (typeof group !== "object") global.db.groups[m.from] = {}
-        if (group) {
-            if (!isBoolean(group.mute)) group.mute = false
-            if (!isNumber(group.lastChat)) group.lastChat = new Date * 1
+    async read() {
+        await mongoose.connect(this.url, this.options)
+        try {
+            const schema = new mongoose.Schema({
+                data: { type: Object, required: true, default: {} }
+            })
+            this.model.database = mongoose.model("data", schema)
+        } catch {
+            this.model.database = mongoose.model("data")
+        }
+        this.data = await this.model.database.findOne({})
+        if (!this.data) {
+            await new this.model.database({ data: {} }).save()
+            this.data = await this.model.database.findOne({})
+        }
+        return this.data?.data || {}
+    }
+
+    async write(data) {
+        const obj = data || global.db
+        if (!this.data?.data) {
+            await new this.model.database({ data: obj }).save()
         } else {
-            global.db.groups[m.from] = {
-                lastChat: new Date * 1,
-                mute: false
-            }
+            const doc = await this.model.database.findById(this.data._id)
+            doc.data = obj
+            await doc.save()
         }
     }
 }
 
-export { loadDatabase }
+class JSONDatabase {
+    constructor() {
+        this.data = {}
+        this.file = path.join(process.cwd(), "temp", config.options.URI)
+    }
 
+    read() {
+        if (fs.existsSync(this.file)) {
+            this.data = JSON.parse(fs.readFileSync(this.file))
+        } else {
+            fs.writeFileSync(this.file, JSON.stringify(this.data, null, 2))
+        }
+        return this.data
+    }
 
-let fileP = fileURLToPath(import.meta.url)
-fs.watchFile(fileP, () => {
-    fs.unwatchFile(fileP)
-    console.log(`Update File "${fileP}"`)
-    import(`${import.meta.url}?update=${Date.now()}`)
-})
+    write(data) {
+        this.data = data || global.db
+        const dir = path.dirname(this.file)
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
+        fs.writeFileSync(this.file, JSON.stringify(this.data, null, 2))
+    }
+}
+
+// 🔄 Unified export
+const Database = /mongo/.test(config.options.URI) ? MongoDB : JSONDatabase
+export default Database
