@@ -90,4 +90,4 @@ if (/mongo/.test(config.options.URI)) {
     }
 }
 
-export { database }
+export default database
