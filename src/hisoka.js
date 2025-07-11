@@ -12,6 +12,8 @@ import Function from "./lib/lib.function.js"
 import { serialize } from "./lib/whatsapp.serialize.js"
 import { Message, readCommands } from "./event/event.message.js"
 import Database from "./lib/lib.database.js"
+const database = new Database()
+
 
 const database = new Database()
 global.Func = Function
