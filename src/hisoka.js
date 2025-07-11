@@ -11,10 +11,9 @@ import API from "./lib/lib.api.js"
 import Function from "./lib/lib.function.js"
 import { serialize } from "./lib/whatsapp.serialize.js"
 import { Message, readCommands } from "./event/event.message.js"
-import Database from "./lib/lib.database.js"
-import Database from "./lib/lib.database.js"
-
+import Database from "./lib/lib.database.js" // ✅ ONLY this
 const database = new Database()
+
 
 global.Func = Function
 global.api = API
