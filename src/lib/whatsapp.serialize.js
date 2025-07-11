@@ -1,13 +1,18 @@
 import config from "../../config.js"
 
 import { Client as _Client } from "whatsapp-web.js"
-import { Message, MessageMedia, Contact, Location, Buttons, List } from 'whatsapp-web.js/src/structures/index.js'
+
+import WWebJS from 'whatsapp-web.js/src/structures/index.js'
+const { Message, MessageMedia, Contact, Location, Buttons, List } = WWebJS
+
+import WWebUtil from "whatsapp-web.js/src/util/Util.js"
+const Util = WWebUtil.default || WWebUtil
+
 import Function from "./lib.function.js"
 import fs, { stat } from "fs"
 import { extension } from "mime-types"
 import { dirname, join } from "path"
 import { fileURLToPath } from "url"
-import Util from "whatsapp-web.js/src/util/Util.js"
 
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
