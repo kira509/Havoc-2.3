@@ -1,5 +1,7 @@
 import config from "../config.js"
-import { LocalAuth } from "whatsapp-web.js"
+import pkg from "whatsapp-web.js"
+const { LocalAuth, Client } = pkg
+
 import chokidar from "chokidar"
 import puppeteer from "puppeteer"
 import path from "path"
@@ -7,9 +9,10 @@ import { platform } from "os"
 
 import API from "./lib/lib.api.js"
 import Function from "./lib/lib.function.js"
-import { Client, serialize } from "./lib/whatsapp.serialize.js"
+import { serialize } from "./lib/whatsapp.serialize.js"
 import { Message, readCommands } from "./event/event.message.js"
 import { database as databes } from "./lib/lib.database.js"
+
 
 const database = new databes()
 global.Func = Function
