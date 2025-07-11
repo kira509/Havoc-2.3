@@ -4,10 +4,10 @@ import fs from "fs"
 import path from "path"
 mongoose.set("strictQuery", false)
 
-let Database // <- Export the class later
+let database
 
 if (/mongo/.test(config.options.URI)) {
-  Database = class MongoDB {
+  database = class MongoDB {
     constructor(url) {
       this.url = url
       this.options = {
@@ -23,28 +23,26 @@ if (/mongo/.test(config.options.URI)) {
       mongoose.connect(this.connection, { ...this.options })
       try {
         const schemaData = new mongoose.Schema({
-          data: {
-            type: Object,
-            required: true,
-            default: {},
-          },
+          data: { type: Object, required: true, default: {} }
         })
         this.model.database = mongoose.model("data", schemaData)
       } catch {
         this.model.database = mongoose.model("data")
       }
+
       this.data = await this.model.database.findOne({})
       if (!this.data) {
         new this.model.database({ data: {} }).save()
         this.data = await this.model.database.findOne({})
-        return this?.data?.data
+        return (this.data = this?.data?.data)
       } else return this?.data?.data || this?.data
     }
 
     write = async (data) => {
       const obj = !!data ? data : global.db
-      if (this.data && !this.data.data)
+      if (this.data && !this.data.data) {
         return new this.model.database({ data: obj }).save()
+      }
       const document = await this.model.database.findById(this.data._id)
       if (!document.data) document.data = {}
       document.data = obj
@@ -52,7 +50,7 @@ if (/mongo/.test(config.options.URI)) {
     }
   }
 } else if (/json/.test(config.options.URI)) {
-  Database = class LocalJSONDatabase {
+  database = class JSONDatabase {
     data = {}
     file = path.join(process.cwd(), "temp", config.options.URI)
 
@@ -77,5 +75,4 @@ if (/mongo/.test(config.options.URI)) {
   }
 }
 
-export { Database } // <- ✅ Export the class, not the instance
-
+export default database
